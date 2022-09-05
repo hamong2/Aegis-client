@@ -11,7 +11,7 @@ node {
       app.push("latest")
     }
   }
-  stage('========== Clone manifest repository ==========') {
+  stage('========== Update manifest file ==========') {
     step {
         git credentialsId: 'github',
         url: 'https://github.com/Hin1209/aegis-manifest.git',

@@ -10,6 +10,7 @@ node {
       app.push("${env.BUILD_NUMBER}")
       app.push("latest")
     }
+    sh "docker rmi -f  $(docker images -q --filter 'reference=*/hyeongin2024/*')"
   }
   stage('========== Update manifest file ==========') {
     step {

@@ -17,7 +17,7 @@ node {
         sh "git config --global user.name 'Hin1209'"
         sh "git config --global user.email 'hyeongin2024@gmail.com'"
         sh "sed -e 's/aegis-client:.*/aegis-client:${env.BUILD_NUMBER}/g' aegis-manifest/aegis.yaml"
-        sh "git add aegis-client/aegis.yaml"
+        sh "git add aegis-manifest/aegis.yaml"
         sh "git commit -m 'fix: change docker image'"
         sh "git push origin main"
     }

@@ -16,6 +16,8 @@ node {
     git credentialsId: 'github',
     url: 'https://github.com/Hin1209/aegis-manifest.git',
     branch: 'main'
+    sh "git config --global user.name 'Hin1209'"
+    sh "git config --global user.email 'hyeongin2024@gmail.com'"
     sh "git clone https://github.com/Hin1209/aegis-manifest.git"
     sh "sed -i 's/hyeongin2024/aegis-client:.*\$hyeongin2024/aegis-client:${env.BUILD_NUMBER}/g' aegis-client/aegis.yaml"
     sh "git add aegis-client/aegis.yaml"

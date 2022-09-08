@@ -121,7 +121,7 @@ export default function VideoChat() {
 
 
   const peer = new Peer(); 
-  const socket = io("https://pangyo-dev01.kro.kr:7070", {
+  const socket = io("https://sktaegis.com", {
   path: '/socket.io'
   });
 

@@ -144,7 +144,7 @@ export default function VideoChat() {
   }
 
   const copyLink = async () => {
-    const roomLink = `https://pangyo-dev01.kro.kr:7070/join/${roomId}`;
+    const roomLink = `https://sktaegis.com/join/${roomId}`;
     console.log("copy");
     try {
       await navigator.clipboard.writeText(roomLink);

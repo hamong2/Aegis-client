@@ -13,16 +13,15 @@ node {
     sh '''docker rmi -f  $(docker images -q --filter 'reference=*/hyeongin2024/*')'''
   }
   stage('========== Update manifest file ==========') {
-    dir('aegis-manifest') {
-        withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'git-tool')]){
-            sh "git config --global user.name 'Hin1209'"
-            sh "git config --global user.email 'hyeongin2024@gmail.com'"
-            sh "git pull origin main"
-            sh "sed -i 's/aegis-client:.*/aegis-client:${env.BUILD_NUMBER}/g' aegis.yaml"
-            sh "git add aegis.yaml"
-            sh "git commit -m 'fix: change docker image'"
-            sh "git push origin main"
-        }
+    withCredentials([gitUsernamePassword(credentialsId:'github', gitToolName:'git-tool')]){
+      sh "git clone https://github.com/Hin1209/aegis-manifest.git"
+      dir('aegis-manifest') {
+        sh "sed -i 's/aegis-client:.*/aegis-client:${env.BUILD_NUMBER}/g' aegis.yaml"
+        sh "git add aegis.yaml"
+        sh "git commit -m 'fix: change docker image'"
+        sh "git push origin main"
+      }
+      sh "rm -rf aegis-manifest"
     }
   }
 }

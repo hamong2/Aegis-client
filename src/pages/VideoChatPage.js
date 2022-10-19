@@ -1,48 +1,108 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Btn from '../components/button';
 import styled from 'styled-components';
-import { io } from "socket.io-client";
 import Peer from "peerjs";
+import { io } from "socket.io-client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 const StyledVideoChat = styled.div`
 * {
     margin: 0;
     padding: 0;
   }
-  
   .header {
     display: flex;
+    background-color: #EDEDED;
     justify-content: center;
     align-items: center;
-    height: 8vh;
-    position: relative;
-    width: 100%;
-    background-color: #1d2635;
+    height: 5vh;
   }
   
-  .logo > h3 {
-    color: #EB5374;
+  .shadow_box {
+    display: flex;
+    box-shadow: 0px 0.1px 0.5px 0.5px gray;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  
+  .title {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+    font-weight: bold;
+    font-size: 150%;
+    color: #555555;
+    margin: 0 0 0 5%;
   }
   
   .main {
-    overflow: hidden;
-    height: 92vh;
+    height: 95vh;
     display: flex;
-  }
-  
-  .videos__group {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 1rem;
-    background-color: #161d29;
+    justify-content: center;
+  }
+
+  .blank {
+    position: absolute;
+    height: 95vh;
+    width: 100vw;
+    background-image: url('./background-main.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.85;
+    z-index: 1;
+  }
+
+  .videos__group {
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    width: 75vw;
+    align-items: center;
+    justify-content: center;
+    background-color: #EDEDED;
+    border-radius: 45px;
+    margin-right: 2vw;
+    z-index: 2;
   }
   
-  Video {
+  .side__bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 85vh;
+    width: 20vw;
+  }
+
+  .recording__time {
+    position: absolute;
+    top: 7.5vh;
+    background-color: #000000;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    width: 20vw;
+    height: 5vh;
+    z-index: 4;
+  }
+  
+  .user__list {
+    display: flex;
+    height: 85vh;
+    width: 20vw;
+    background-color: #EDEDED;
+    border-radius: 30px;
+    z-index: 3;
+  }
+
+  video {
     height: 300px;
-    border-radius: 1rem;
+    border-radius: 30px;
     margin: 0.5rem 0.5rem 0.5rem 0.5rem;
     width: 400px;
     object-fit: cover;
@@ -52,13 +112,19 @@ const StyledVideoChat = styled.div`
   }
   
   .options {
-    padding: 1rem;
+    position: absolute;
+    top: 85vh;
+    width: 40vw;
     display: flex;
-    background-color: #1d2635;
+    justify-content: center;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    padding: 10px;
+    z-index: 3;
   }
   
-  .background__red {
-    background-color: #f6484a;
+  .btn {
+    margin: 2px;
   }
   
   #video-grid {
@@ -66,44 +132,44 @@ const StyledVideoChat = styled.div`
     justify-content: center;
     flex-wrap: wrap;
   }
-  
-  .header__back {
-    display: none;
-    position: absolute;
-    font-size: 1.3rem;
-    top: 17px;
-    left: 28px;
-    color: #fff;
+
+  .view {
+    margin: 0 1vw 0 1vw;
+    border-radius: 30px;
   }
-  
-  @media (max-width: 700px) {
-    .main__right {
-      display: none;
-    }
-  
-    video {
-      height: auto;
-      width: 100%;
-    }
-  }
-  .options {
-    padding: 1rem;
+
+  .recording__time {
     display: flex;
-    background-color: #202633;
-    flex-direction: column;
-    height: 95.5%;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5vw;
   }
-  
-.options__top {
-display: flex;
-flex-direction: column;
-}
-  
-.options__bottom {
-display: flex;
-margin-top: auto;
-flex-direction: column;
-}
+
+  .user__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2vh 0 1vh 0;
+    width: 20vw;
+  }
+
+  .first__user {
+    margin-top: 4vh;
+  }
+
+  .name {
+    margin-left: 1.5vw;
+    font-weight: bold;
+    font-size: 1.5vw;
+  }
 `
 
 
@@ -112,19 +178,38 @@ export default function VideoChat() {
   const roomId = useLocation().state.roomId;
 
   let myStream = null;
+  let fpsInterval;
+  let then;
+  let cnt=5;
+  let box1=[0,0,0,0], box2=[0,0,0,0];
 
   const videoGrid = useRef();
   const myVideo = useRef();
   const opponentVideo = useRef();
   const myCanvas = useRef();
   const opponentCanvas = useRef();
-
-
+  const myView = useRef();
+  const opponentView = useRef();
+  const recordTime = useRef();
+  const invited = useRef();
   const peer = new Peer(); 
+
+  const [withFriend, isWithFriend] = useState(false);
+
   const socket = io("https://sktaegis.com", {
   path: '/socket.io'
   });
+  const pysocket = io("http://ec2-43-200-8-249.ap-northeast-2.compute.amazonaws.com:7080", 
+  {transports: ['websocket', 'polling', 'flashsocket']}
+  );
+  pysocket.on('connect', () => {
+    console.log(`connect ${socket.id}`);
+  });
 
+  pysocket.on('disconnect', () => {
+      console.log(`disconnect ${socket.id}`);
+  });
+  
   const handleCamera = () => {
     const enabled = myStream.getVideoTracks()[0].enabled;
     if (enabled) {
@@ -145,7 +230,6 @@ export default function VideoChat() {
 
   const copyLink = async () => {
     const roomLink = `https://sktaegis.com/join/${roomId}`;
-    console.log("copy");
     try {
       await navigator.clipboard.writeText(roomLink);
       alert("링크가 클립보드에 복사되었습니다.");
@@ -154,123 +238,191 @@ export default function VideoChat() {
       alert("복사 실패");
     }
   } 
-  console.log(roomId);
   peer.on("open", (id) => {
     socket.emit("join-room", roomId, id);
-    console.log(id);
   });
 
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
       video: true,
-      audio: true,
+      audio: false,
     })
     .then((stream) => {
+      
       myStream = stream;
       addVideoStream(myVideo.current, stream);
-      const ctx = myCanvas.current.getContext("2d");
+      const myCtx = myView.current.getContext("2d");
+      const opctx = opponentCanvas.current.getContext("2d");
+      const opView = opponentView.current.getContext("2d");
 
-      const renderMyVideo = () => {
-        var sx=70, sy=60, ex=240, ey=200;
-        mosaic(ctx, myVideo.current, sx, sy, ex, ey);
+      const mosaic = (img) => {
+        var sx=box1[0], sy=box1[1], ex=box1[2], ey=box1[3];
+        for(var i=sy; i<ey; i++) {
+          for(var j=sx; j<ex; j++) {
+            var h = i*400*4;
+            var r = img.data[h+4*j];
+            var g = img.data[h+4*j+1];
+            var b = img.data[h+4*j+2];
+            var a = img.data[h+4*j+3];
+            for(var k=0; k<6; k++) {
+              img.data[h+4*j+4] = r;
+              img.data[h+4*j+5] = g;
+              img.data[h+4*j+6] = b;
+              img.data[h+4*j+7] = a;
+              j++;
+            }
+          }
+        }var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
+        for(var i=sy; i<ey; i++) {
+          for(var j=sx; j<ex; j++) {
+            var h = i*400*4;
+            var r = img.data[h+4*j];
+            var g = img.data[h+4*j+1];
+            var b = img.data[h+4*j+2];
+            var a = img.data[h+4*j+3];
+            for(var k=0; k<6; k++) {
+              img.data[h+4*j+4] = r;
+              img.data[h+4*j+5] = g;
+              img.data[h+4*j+6] = b;
+              img.data[h+4*j+7] = a;
+              j++;
+            }
+          }
+        }
+        return img;
+      }
+      pysocket.on('filter', (data) => {
+        var iData = new ImageData(new Uint8ClampedArray(data.img), 400, 300);
+        if (data.count == 5) {
+          for(var i=0; i<data.bbox.length; i++) {
+            if(i == 0) {
+              box1[0] = Math.trunc(data.bbox[i][0]);
+              box1[1] = Math.trunc(data.bbox[i][1]);
+              box1[2] = Math.trunc(data.bbox[i][2]);
+              box1[3] = Math.trunc(data.bbox[i][3]);
+            }
+            else {
+              box2[0] = Math.trunc(data.bbox[i][0]);
+              box2[1] = Math.trunc(data.bbox[i][1]);
+              box2[2] = Math.trunc(data.bbox[i][2]);
+              box2[3] = Math.trunc(data.bbox[i][3]);
+            }
+          }
+        }
+        iData = mosaic(iData);
+        opView.putImageData(iData, 0, 0);
+      });
+      const startAnimating = (fps) => {
+        fpsInterval = 1000 / fps;
+        then = Date.now();
+        renderOpponentVideo();
+      }
+      const renderMyVideo = () => {  
+        myCtx.drawImage(myVideo.current, 0, 0, myVideo.current.width, myVideo.current.height);
         requestAnimationFrame(renderMyVideo);
+      }
+      const renderOpponentVideo = () => {
+        opctx.drawImage(opponentVideo.current, 0, 0, opponentVideo.current.width, opponentVideo.current.height);
+        var now = Date.now();
+        var elapsed = now - then;
+        if(elapsed > fpsInterval) {
+          then = now - (elapsed % fpsInterval);
+          sendImage(opctx, opponentVideo.current);
+        }
       }
       
       peer.on("call", (call) => {
         call.answer(stream);
         call.on("stream", (userVideoStream) => {
           addVideoStream(opponentVideo.current, userVideoStream);
-          const opctx = opponentCanvas.current.getContext("2d");
-          const renderOpponentVideo = () => {
-            var sx=70, sy=60, ex=240, ey=200;
-            mosaic(opctx, opponentVideo.current, sx, sy, ex, ey);
-            requestAnimationFrame(renderOpponentVideo);
-          }
-          console.log("ack");
-          opponentVideo.current.addEventListener('canplaythrough', () => {
-            renderOpponentVideo();
-          });
-          console.log("connect");
         });
-
       });
       
       socket.on("user-connected", (userId) => {
+        isWithFriend(true);
         const call = peer.call(userId, stream);
         call.answer(stream);
         call.on("stream", (userVideoStream) => {
           addVideoStream(opponentVideo.current, userVideoStream);
-          console.log("video");
         });
-        const opctx = opponentCanvas.current.getContext("2d");
         const renderOpponentVideo = () => {
-          var sx=70, sy=60, ex=240, ey=200;
-          mosaic(opctx, opponentVideo.current, sx, sy, ex, ey);
+          sendImage(opctx, opponentVideo.current);
           requestAnimationFrame(renderOpponentVideo);
         }
-        opponentVideo.current.addEventListener('canplaythrough', () => {
-          renderOpponentVideo();
-        });
-        console.log("join!");
+      });
+      opponentVideo.current.addEventListener('canplaythrough', () => {
+        startAnimating(10);
       }); 
       myVideo.current.addEventListener('canplaythrough', () => {
         renderMyVideo();
       });      
-    });
+    }); 
   });
 
-  const mosaic = (ctx, video, sx, sy, ex, ey) => {
-    ctx.drawImage(video, 0 , 0, video.width, video.height);
-    if(ex - sx === 0) ex = sx + 30;
-    if(ey - sy === 0) ey = sy + 30;
-    var imageData = ctx.getImageData(sx, sy, ex-sx, ey-sy);
-    for(var i=0;i<imageData.data.length;i=i+4){
-      var r = imageData.data[i];
-      var g = imageData.data[i+1];
-      var b = imageData.data[i+2];
-      var a = imageData.data[i+3];
-        for(var j=1;j<=9;j++){
-        imageData.data[i+4] = r;
-        imageData.data[i+5] = g;
-        imageData.data[i+6] = b;
-        imageData.data[i+7] = a;
-        i=i+4;
-      }
+  const sendImage = (ctx, video) => {
+    ctx.drawImage(video, 0, 0, video.width, video.height);
+    var imageData = ctx.getImageData(0, 0, video.width, video.height);
+    var rgbArray = new Uint8Array((imageData.data.length / 4) * 3);
+    var i = 0;
+    var j = 0;
+    while( i < imageData.data.length){
+        rgbArray[j++] = imageData.data[i++];
+        rgbArray[j++] = imageData.data[i++];
+        rgbArray[j++] = imageData.data[i++];
+        i++;
     }
-    ctx.putImageData(imageData, sx, sy);
+    pysocket.emit("filtering", {rgb: rgbArray, origin: imageData.data, count: cnt});
+    if(cnt == 5) cnt = 0;
+    else cnt++;
   }
   
 
   return (
       <StyledVideoChat>
-          <div className="header">
-              <div className="logo">
-                  <div className="header__back">
-                      <i className="fas fa-angle-left"></i>
-                  </div>
-                  <h3>Aegis Video Chat</h3>
-              </div>
-          </div>  
+        <div className="header">
+          <div className="shadow_box">
+            <div className="title">A e g i s</div>
+          </div>
+        </div>
           <div className="main">  
-            <div className="options">
-                <div className="options__top">
-                    <Btn btnAction="startRecord"/>
-                    <Btn btnAction="Invite" invite={ copyLink }/>
-                    <Btn btnAction="Exit" />
-                </div>
-                <div className="options__bottom">
-                    <Btn btnAction="startVideo" handleCamera={ handleCamera }/>
-                    <Btn btnAction="startAudio" handleAudio={ handleAudio }/>
-                </div>
-            </div>
+            <div className="blank"/>
+            
             <div className="videos__group">
-                <div ref={videoGrid} id="video-grid">
-                    <video id="myVideo" ref={myVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
-                    <canvas ref={myCanvas} width="400" height="300"></canvas>
-                    <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
-                    <canvas ref={opponentCanvas} width="400" height="300"></ canvas>
+              <div ref={videoGrid} id="video-grid">
+                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
+                  <canvas ref={myCanvas} width="400" height="300" hidden={true}></canvas>
+                  <canvas ref={myView} width="400" height="300" className="view"></canvas>
+                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
+                  <canvas ref={opponentCanvas} width="400" height="300" hidden={true}></ canvas>
+                  <canvas ref={opponentView} width="400" height="300" className="view"></canvas>
+              </div>
+              <div className="options">
+                <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>
+                <Btn className="btn" btnAction="startVideo" handleCamera={ handleCamera }/>
+                <Btn ref={recordTime} className="btn" btnAction="startRecord"/>
+                <Btn className="btn" btnAction="Invite" invite={ copyLink }/>
+                <Btn className="btn" btnAction="Exit" />  
+              </div>
+            </div>
+            <div className="side__bar">
+              <div className="recording__time">
+                  {withFriend? <p>Chatting in Progress</p>:<p>Invite Friends!</p> }
+              </div>
+              <div className="user__list">
+                <div className="user first__user">
+                  <FontAwesomeIcon icon={ faUsers }/>
+                  <div className="name">
+                    주재원
+                  </div>
                 </div>
+                {withFriend ? <div ref={invited} className="user" hidden={true}>
+                  <FontAwesomeIcon icon={ faUsers } />
+                    <div className="name">
+                      주재원
+                    </div>
+                </div>: <div></div>}
+              </div>
             </div>
           </div>
       </StyledVideoChat>

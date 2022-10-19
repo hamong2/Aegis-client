@@ -22,6 +22,7 @@ html, body {
   justify-content: center;
   align-items: center;
   height: 5vh;
+  background-color: #EDEDED;
 }
 
 .shadow_box {

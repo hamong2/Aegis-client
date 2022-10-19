@@ -6,21 +6,21 @@ export default function Icon(props) {
 
     switch(props.iconName){
         case "stopVideo":
-            return <FontAwesomeIcon icon={faVideoSlash} />;
+            return <FontAwesomeIcon icon={faVideoSlash} size="xs"/>;
         case "startVideo":
-            return <FontAwesomeIcon icon={faVideo} />;
+            return <FontAwesomeIcon icon={faVideo} size="xs"/>;
         case "muteAudio":
-            return <FontAwesomeIcon icon={faMicrophoneSlash} />;
+            return <FontAwesomeIcon icon={faMicrophoneSlash} size="xs"/>;
         case "startAudio":
-            return <FontAwesomeIcon icon={faMicrophone} />;
+            return <FontAwesomeIcon icon={faMicrophone} size="xs"/>;
         case "startRecord":
-            return <FontAwesomeIcon icon={faCircleDot} />;
+            return <FontAwesomeIcon icon={faCircleDot} size="xs"/>;
         case "stopRecord":
-            return <FontAwesomeIcon icon={faStop} />;
+            return <FontAwesomeIcon icon={faStop} size="xs"/>;
         case "Exit":
-            return <FontAwesomeIcon icon={faDoorOpen} />;
+            return <FontAwesomeIcon icon={faDoorOpen} size="xs"/>;
         case "Invite":
-            return <FontAwesomeIcon icon={faUser} />;
+            return <FontAwesomeIcon icon={faUser} size="xs"/>;
         default:
             return <image />
     }

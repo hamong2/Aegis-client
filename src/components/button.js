@@ -9,14 +9,23 @@ const StyledBtn = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #606fe4;
+    background-color: #FFFFFF;
     height: 50px;
     border-radius: 5px;
-    color: #ffffff;
-    font-size: 1.2rem;
+    color: #000000;
+    font-size: 3vw;
     width: 50px;
-    margin: 0.5rem 0;
-  }
+    margin: 0.5rem 2vw 0.5rem 2vw;
+}
+
+#startAudio {
+    margin-left: 0;
+}
+
+#Exit {
+    margin-right: 0;
+}
+
 `
 
 export default function Btn(props) {

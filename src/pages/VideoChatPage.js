@@ -179,9 +179,13 @@ export default function VideoChat() {
 
   let myStream = null;
   let fpsInterval;
+  let myFpsInterval;
+  let myThen;
   let then;
   let cnt=5;
   let box1=[0,0,0,0], box2=[0,0,0,0];
+  let cal=0;
+  let send=0;
 
   const videoGrid = useRef();
   const myVideo = useRef();
@@ -245,16 +249,25 @@ export default function VideoChat() {
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
-      video: true,
+      video: {width: 400, height: 300, frameRate: {ideal: 10, max: 15}},
       audio: false,
     })
     .then((stream) => {
       
       myStream = stream;
       addVideoStream(myVideo.current, stream);
-      const myCtx = myView.current.getContext("2d");
-      const opctx = opponentCanvas.current.getContext("2d");
-      const opView = opponentView.current.getContext("2d");
+      const myCtx = myView.current.getContext("2d",{
+        alpha: false,
+        willReadFrequently: true
+      });
+      const opctx = opponentCanvas.current.getContext("2d", {
+        alpha: false,
+        willReadFrequently: true
+      });
+      const opView = opponentView.current.getContext("2d", {
+        alpha: false,
+        willReadFrequently: true
+      });
 
       const mosaic = (img) => {
         var sx=box1[0], sy=box1[1], ex=box1[2], ey=box1[3];
@@ -264,12 +277,10 @@ export default function VideoChat() {
             var r = img.data[h+4*j];
             var g = img.data[h+4*j+1];
             var b = img.data[h+4*j+2];
-            var a = img.data[h+4*j+3];
             for(var k=0; k<6; k++) {
               img.data[h+4*j+4] = r;
               img.data[h+4*j+5] = g;
               img.data[h+4*j+6] = b;
-              img.data[h+4*j+7] = a;
               j++;
             }
           }
@@ -280,12 +291,10 @@ export default function VideoChat() {
             var r = img.data[h+4*j];
             var g = img.data[h+4*j+1];
             var b = img.data[h+4*j+2];
-            var a = img.data[h+4*j+3];
             for(var k=0; k<6; k++) {
               img.data[h+4*j+4] = r;
               img.data[h+4*j+5] = g;
               img.data[h+4*j+6] = b;
-              img.data[h+4*j+7] = a;
               j++;
             }
           }
@@ -293,7 +302,10 @@ export default function VideoChat() {
         return img;
       }
       pysocket.on('filter', (data) => {
-        var iData = new ImageData(new Uint8ClampedArray(data.img), 400, 300);
+        cal++;
+        if(cal % 10 == 0) console.log("draw");
+        var iData = opctx.getImageData(0,0,400,300);
+        // var iData = new ImageData(new Uint8ClampedArray(data.img), 400, 300);
         if (data.count == 5) {
           for(var i=0; i<data.bbox.length; i++) {
             if(i == 0) {
@@ -310,6 +322,7 @@ export default function VideoChat() {
             }
           }
         }
+        // iData = mosaic(iData);
         iData = mosaic(iData);
         opView.putImageData(iData, 0, 0);
       });
@@ -318,18 +331,28 @@ export default function VideoChat() {
         then = Date.now();
         renderOpponentVideo();
       }
+      const startMyAnimating = (fps) => {
+        myFpsInterval = 1000 / fps;
+        myThen = Date.now();
+        renderMyVideo();
+      }
       const renderMyVideo = () => {  
-        myCtx.drawImage(myVideo.current, 0, 0, myVideo.current.width, myVideo.current.height);
+        var now = Date.now();
+        var elapsed = now - myThen;
+        if(elapsed > myFpsInterval) {
+          myThen = now - (elapsed % myFpsInterval);
+          myCtx.drawImage(myVideo.current, 0, 0, myVideo.current.width, myVideo.current.height);
+        }
         requestAnimationFrame(renderMyVideo);
       }
       const renderOpponentVideo = () => {
-        opctx.drawImage(opponentVideo.current, 0, 0, opponentVideo.current.width, opponentVideo.current.height);
         var now = Date.now();
         var elapsed = now - then;
         if(elapsed > fpsInterval) {
           then = now - (elapsed % fpsInterval);
           sendImage(opctx, opponentVideo.current);
         }
+        requestAnimationFrame(renderOpponentVideo);
       }
       
       peer.on("call", (call) => {
@@ -346,16 +369,12 @@ export default function VideoChat() {
         call.on("stream", (userVideoStream) => {
           addVideoStream(opponentVideo.current, userVideoStream);
         });
-        const renderOpponentVideo = () => {
-          sendImage(opctx, opponentVideo.current);
-          requestAnimationFrame(renderOpponentVideo);
-        }
       });
       opponentVideo.current.addEventListener('canplaythrough', () => {
-        startAnimating(10);
+        startAnimating(15);
       }); 
       myVideo.current.addEventListener('canplaythrough', () => {
-        renderMyVideo();
+        startMyAnimating(10); 
       });      
     }); 
   });
@@ -372,7 +391,10 @@ export default function VideoChat() {
         rgbArray[j++] = imageData.data[i++];
         i++;
     }
-    pysocket.emit("filtering", {rgb: rgbArray, origin: imageData.data, count: cnt});
+    pysocket.emit("filtering", {rgb: rgbArray, //origin: imageData.data, 
+    count: cnt});
+    send++;
+    if(send % 10 == 0) console.log("send");
     if(cnt == 5) cnt = 0;
     else cnt++;
   }

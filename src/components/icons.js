@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faDoorOpen ,faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faCircleDot, faStop, faUser} from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faDoorOpen ,faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faCircleDot, faStop, faUser} from '@fortawesome/free-solid-svg-icons';
 
 export default function Icon(props) {
 
@@ -21,6 +21,8 @@ export default function Icon(props) {
             return <FontAwesomeIcon icon={faDoorOpen} size="xs"/>;
         case "Invite":
             return <FontAwesomeIcon icon={faUser} size="xs"/>;
+        case "plus":
+            return <FontAwesomeIcon icon={faPlus} size="3x"/>;
         default:
             return <image />
     }

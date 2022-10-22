@@ -66,7 +66,9 @@ export default function Btn(props) {
             case "plus":
                 setbtnState("plus");
                 break
-            
+            case "plus":
+                setbtnState("plus");
+                break
             default:
                 break;
         }

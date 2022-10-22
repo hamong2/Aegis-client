@@ -5,27 +5,22 @@ const StyledBtn = styled.div`
 #stopRecord {
     background-color: red;
 }
+#plus {
+    background-color: #D9D9D9
+}
+
 .button {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #FFFFFF;
-    height: 50px;
-    border-radius: 5px;
-    color: #000000;
-    font-size: 3vw;
-    width: 50px;
-    margin: 0.5rem 2vw 0.5rem 2vw;
-}
-
-#startAudio {
-    margin-left: 0;
-}
-
-#Exit {
-    margin-right: 0;
-}
-
+    background-color: #FFFFFF; 
+    height: 80px;
+    border-radius: 10px;
+    color: #646262; 
+    font-size: 2rem;
+    width: 80px;
+    margin: 0.5rem 0;
+  }
 `
 
 export default function Btn(props) {
@@ -59,6 +54,19 @@ export default function Btn(props) {
             case "Invite":
                 props.invite();
                 break;
+            case "forward":
+                setbtnState("forward");
+                break;
+            case "backward":
+                setbtnState("backward");
+                break;    
+            case "Upload":
+                setbtnState("Upload");
+                break
+            case "plus":
+                setbtnState("plus");
+                break
+            
             default:
                 break;
         }

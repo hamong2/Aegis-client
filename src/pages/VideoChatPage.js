@@ -203,7 +203,7 @@ export default function VideoChat() {
   const socket = io("https://sktaegis.com", {
   path: '/socket.io'
   });
-  const pysocket = io("http://ec2-43-200-8-249.ap-northeast-2.compute.amazonaws.com:7080", 
+  const pysocket = io("https://ec2-43-200-8-249.ap-northeast-2.compute.amazonaws.com", 
   {transports: ['websocket', 'polling', 'flashsocket']}
   );
   pysocket.on('connect', () => {

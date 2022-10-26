@@ -159,10 +159,6 @@ const StyledVideoChat = styled.div`
     font-weight: bold;
     font-size: 1.5vw;
   }
-
-  .my__video {
-    margin-top: 400px;
-  }
 `
 
 
@@ -240,7 +236,7 @@ export default function VideoChat() {
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
-      video: {width: 900, height: 600, frameRate: {ideal: 10, max: 15}},
+      video: {width: 400, height: 300, frameRate: {ideal: 10, max: 15}},
       audio: false,
     })
     .then((stream) => {
@@ -296,7 +292,7 @@ export default function VideoChat() {
         return img;
       }
       pysocket.on('filter', (data) => {
-        var iData = opctx.getImageData(0,0,900,600);
+        var iData = opctx.getImageData(0,0,400,300);
         if (data.count == 5) {
           for(var i=0; i<data.bbox.length; i++) {
             if(i == 0) {
@@ -405,11 +401,11 @@ export default function VideoChat() {
             
             <div className="videos__group">
               <div ref={videoGrid} id="video-grid">
-                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="200px" height="100px" hidden={true}/>
-                  <canvas ref={myView} width="200px" height="100px" className="view my__video"></canvas>
-                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="900px" height="600px" hidden={true}/>
-                  <canvas ref={opponentCanvas} width="900px" height="600px" hidden={true}></ canvas>
-                  <canvas ref={opponentView} width="900px" height="600px" className="view"></canvas>
+                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="400px" height="300px" hidden={true}/>
+                  <canvas ref={myView} width="400px" height="300px" className="view my__video"></canvas>
+                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="400px" height="300px" hidden={true}/>
+                  <canvas ref={opponentCanvas} width="400px" height="300px" hidden={true}></ canvas>
+                  <canvas ref={opponentView} width="400px" height="300px" className="view"></canvas>
               </div>
               <div className="options">
                 <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>

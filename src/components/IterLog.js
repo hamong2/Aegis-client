@@ -7,7 +7,8 @@ export default function IterLog(props) {
         const result = [];
         for(let i = 0; i < props.log.length; i++) {
             var verb, time = props.log[i];
+            result.push(<div>{verb} {time}</div>)
         }
     }
-    return (<div></div>);
+    return (<div>{rendering()}</div>);
 }

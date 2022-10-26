@@ -185,7 +185,8 @@ export default function VideoChat() {
   let cnt=5;
   let box1=[0,0,0,0], box2=[0,0,0,0];
   let cal=0;
-  let send=0;
+  let verb="null";
+  let harmful=['fuck_you', 'violence', 'stab', 'strangle', 'smoke']
 
   const videoGrid = useRef();
   const myVideo = useRef();
@@ -249,7 +250,7 @@ export default function VideoChat() {
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
-      video: {width: 400, height: 300, frameRate: {ideal: 10, max: 15}},
+      video: {width: 500, height: 400, frameRate: {ideal: 10, max: 15}},
       audio: false,
     })
     .then((stream) => {
@@ -277,25 +278,28 @@ export default function VideoChat() {
             var r = img.data[h+4*j];
             var g = img.data[h+4*j+1];
             var b = img.data[h+4*j+2];
-            for(var k=0; k<6; k++) {
+            for(var k=0; k<9; k++) {
               img.data[h+4*j+4] = r;
               img.data[h+4*j+5] = g;
               img.data[h+4*j+6] = b;
               j++;
+              if(j >= ex) break;
             }
           }
-        }var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
+        }
+        var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
         for(var i=sy; i<ey; i++) {
           for(var j=sx; j<ex; j++) {
             var h = i*400*4;
             var r = img.data[h+4*j];
             var g = img.data[h+4*j+1];
             var b = img.data[h+4*j+2];
-            for(var k=0; k<6; k++) {
+            for(var k=0; k<9; k++) {
               img.data[h+4*j+4] = r;
               img.data[h+4*j+5] = g;
               img.data[h+4*j+6] = b;
               j++;
+              if(j >= ex) break;
             }
           }
         }
@@ -303,9 +307,7 @@ export default function VideoChat() {
       }
       pysocket.on('filter', (data) => {
         cal++;
-        if(cal % 10 == 0) console.log("draw");
-        var iData = opctx.getImageData(0,0,400,300);
-        // var iData = new ImageData(new Uint8ClampedArray(data.img), 400, 300);
+        var iData = opctx.getImageData(0,0,500,400);
         if (data.count == 5) {
           for(var i=0; i<data.bbox.length; i++) {
             if(i == 0) {
@@ -322,8 +324,10 @@ export default function VideoChat() {
             }
           }
         }
-        // iData = mosaic(iData);
-        iData = mosaic(iData);
+        if(data.verb > 0) verb = data.verb;
+        else if(data.verb == 0) verb = 0;
+        if(verb >= 118) iData = mosaic(iData);
+        console.log(Date.now() - data.time);
         opView.putImageData(iData, 0, 0);
       });
       const startAnimating = (fps) => {
@@ -391,10 +395,8 @@ export default function VideoChat() {
         rgbArray[j++] = imageData.data[i++];
         i++;
     }
-    pysocket.emit("filtering", {rgb: rgbArray, //origin: imageData.data, 
+    pysocket.emit("filtering", {rgb: rgbArray, time: Date.now(),
     count: cnt});
-    send++;
-    if(send % 10 == 0) console.log("send");
     if(cnt == 5) cnt = 0;
     else cnt++;
   }
@@ -414,10 +416,10 @@ export default function VideoChat() {
               <div ref={videoGrid} id="video-grid">
                   <video id="myVideo" ref={myVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
                   <canvas ref={myCanvas} width="400" height="300" hidden={true}></canvas>
-                  <canvas ref={myView} width="400" height="300" className="view"></canvas>
+                  <canvas ref={myView} width="500" height="400" className="view"></canvas>
                   <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
                   <canvas ref={opponentCanvas} width="400" height="300" hidden={true}></ canvas>
-                  <canvas ref={opponentView} width="400" height="300" className="view"></canvas>
+                  <canvas ref={opponentView} width="500" height="400" className="view"></canvas>
               </div>
               <div className="options">
                 <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>
@@ -435,13 +437,13 @@ export default function VideoChat() {
                 <div className="user first__user">
                   <FontAwesomeIcon icon={ faUsers }/>
                   <div className="name">
-                    주재원
+                     주재원
                   </div>
                 </div>
                 {withFriend ? <div ref={invited} className="user" hidden={true}>
                   <FontAwesomeIcon icon={ faUsers } />
                     <div className="name">
-                      주재원
+                      안희윤
                     </div>
                 </div>: <div></div>}
               </div>

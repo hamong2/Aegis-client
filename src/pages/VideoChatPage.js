@@ -99,17 +99,6 @@ const StyledVideoChat = styled.div`
     border-radius: 30px;
     z-index: 3;
   }
-
-  video {
-    height: 300px;
-    border-radius: 30px;
-    margin: 0.5rem 0.5rem 0.5rem 0.5rem;
-    width: 400px;
-    object-fit: cover;
-    transform: rotateY(180deg);
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-  }
   
   .options {
     position: absolute;
@@ -170,6 +159,10 @@ const StyledVideoChat = styled.div`
     font-weight: bold;
     font-size: 1.5vw;
   }
+
+  .my__video {
+    margin-top: 400px;
+  }
 `
 
 
@@ -191,7 +184,6 @@ export default function VideoChat() {
   const videoGrid = useRef();
   const myVideo = useRef();
   const opponentVideo = useRef();
-  const myCanvas = useRef();
   const opponentCanvas = useRef();
   const myView = useRef();
   const opponentView = useRef();
@@ -250,7 +242,7 @@ export default function VideoChat() {
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
-      video: {width: 500, height: 400, frameRate: {ideal: 10, max: 15}},
+      video: {width: 900, height: 600, frameRate: {ideal: 10, max: 15}},
       audio: false,
     })
     .then((stream) => {
@@ -414,12 +406,11 @@ export default function VideoChat() {
             
             <div className="videos__group">
               <div ref={videoGrid} id="video-grid">
-                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="500" height="400" hidden={true}/>
-                  <canvas ref={myCanvas} width="400" height="300" hidden={true}></canvas>
-                  <canvas ref={myView} width="500" height="400" className="view"></canvas>
-                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="500" height="400" hidden={true}/>
-                  <canvas ref={opponentCanvas} width="500" height="400" hidden={true}></ canvas>
-                  <canvas ref={opponentView} width="500" height="400" className="view"></canvas>
+                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="200px" height="100px" hidden={true}/>
+                  <canvas ref={myView} width="200px" height="100px" className="view my__video"></canvas>
+                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="900px" height="600px" hidden={true}/>
+                  <canvas ref={opponentCanvas} width="900px" height="600px" hidden={true}></ canvas>
+                  <canvas ref={opponentView} width="900px" height="600px" className="view"></canvas>
               </div>
               <div className="options">
                 <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>

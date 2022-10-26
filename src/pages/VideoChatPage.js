@@ -299,7 +299,7 @@ export default function VideoChat() {
       }
       pysocket.on('filter', (data) => {
         cal++;
-        var iData = opctx.getImageData(0,0,500,400);
+        var iData = opctx.getImageData(0,0,900,600);
         if (data.count == 5) {
           for(var i=0; i<data.bbox.length; i++) {
             if(i == 0) {
@@ -389,7 +389,7 @@ export default function VideoChat() {
     }
     pysocket.emit("filtering", {rgb: rgbArray, time: Date.now(),
     count: cnt});
-    if(cnt == 5) cnt = 0;
+    if(cnt == 10) cnt = 0;
     else cnt++;
   }
   

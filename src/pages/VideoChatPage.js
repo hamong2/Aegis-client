@@ -414,11 +414,11 @@ export default function VideoChat() {
             
             <div className="videos__group">
               <div ref={videoGrid} id="video-grid">
-                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
+                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="500" height="400" hidden={true}/>
                   <canvas ref={myCanvas} width="400" height="300" hidden={true}></canvas>
                   <canvas ref={myView} width="500" height="400" className="view"></canvas>
-                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="400" height="300" hidden={true}/>
-                  <canvas ref={opponentCanvas} width="400" height="300" hidden={true}></ canvas>
+                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="500" height="400" hidden={true}/>
+                  <canvas ref={opponentCanvas} width="500" height="400" hidden={true}></ canvas>
                   <canvas ref={opponentView} width="500" height="400" className="view"></canvas>
               </div>
               <div className="options">

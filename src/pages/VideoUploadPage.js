@@ -198,6 +198,7 @@ export default function VideoUpload() {
                 console.log("success");
                 console.log(res);
                 const fileURL = window.URL.createObjectURL(files[0]);
+                setLog(res.data);
                 setVideoSrc(fileURL);
                 setLoading(false);
             })

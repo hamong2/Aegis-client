@@ -177,9 +177,7 @@ export default function VideoChat() {
   let then;
   let cnt=5;
   let box1=[0,0,0,0], box2=[0,0,0,0];
-  let cal=0;
   let verb="null";
-  let harmful=['fuck_you', 'violence', 'stab', 'strangle', 'smoke']
 
   const videoGrid = useRef();
   const myVideo = useRef();
@@ -298,7 +296,6 @@ export default function VideoChat() {
         return img;
       }
       pysocket.on('filter', (data) => {
-        cal++;
         var iData = opctx.getImageData(0,0,900,600);
         if (data.count == 5) {
           for(var i=0; i<data.bbox.length; i++) {
@@ -319,7 +316,6 @@ export default function VideoChat() {
         if(data.verb > 0) verb = data.verb;
         else if(data.verb == 0) verb = 0;
         if(verb >= 118) iData = mosaic(iData);
-        console.log(Date.now() - data.time);
         opView.putImageData(iData, 0, 0);
       });
       const startAnimating = (fps) => {
@@ -387,10 +383,13 @@ export default function VideoChat() {
         rgbArray[j++] = imageData.data[i++];
         i++;
     }
-    pysocket.emit("filtering", {rgb: rgbArray, time: Date.now(),
-    count: cnt});
-    if(cnt == 10) cnt = 0;
-    else cnt++;
+    if(cnt == 5) {
+      pysocket.emit("filtering", {rgb: rgbArray, count: cnt})
+      cnt = 0;
+    }
+    else {
+      pysocket.emit("filtering", {count: cnt++});
+    }
   }
   
 

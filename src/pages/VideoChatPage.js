@@ -236,7 +236,7 @@ export default function VideoChat() {
   useEffect(() => {
     navigator.mediaDevices
     .getUserMedia({ 
-      video: {width: 300, height: 400, frameRate: {ideal: 10, max: 15}},
+      video: {width: 600, height: 900, frameRate: {ideal: 10, max: 15}},
       audio: false,
     })
     .then((stream) => {
@@ -292,8 +292,9 @@ export default function VideoChat() {
         return img;
       }
       pysocket.on('filter', (data) => {
-        var iData = opctx.getImageData(0,0,300,400);
+        var iData = opctx.getImageData(0,0,600,900);
         if (data.count == 5) {
+          console.log(data.verb, data.bbox);
           for(var i=0; i<data.bbox.length; i++) {
             if(i == 0) {
               box1[0] = Math.trunc(data.bbox[i][0]);
@@ -311,7 +312,7 @@ export default function VideoChat() {
         }
         if(data.verb > 0) verb = data.verb;
         else if(data.verb == 0) verb = 0;
-        if(verb >= 118) iData = mosaic(iData);
+        if(verb >= 117) iData = mosaic(iData);
         opView.putImageData(iData, 0, 0);
       });
       const startAnimating = (fps) => {
@@ -401,11 +402,11 @@ export default function VideoChat() {
             
             <div className="videos__group">
               <div ref={videoGrid} id="video-grid">
-                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="300px" height="400px" hidden={true}/>
-                  <canvas ref={myView} width="300px" height="400px" className="view my__video"></canvas>
-                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="300px" height="400px" hidden={true}/>
-                  <canvas ref={opponentCanvas} width="300px" height="400px" hidden={true}></ canvas>
-                  <canvas ref={opponentView} width="300px" height="400px" className="view"></canvas>
+                  <video id="myVideo" ref={myVideo} autoPlay playsInline width="600px" height="900px" hidden={true}/>
+                  <canvas ref={myView} width="600px" height="900px" className="view my__video"></canvas>
+                  <video id="opponentVideo" ref={opponentVideo} autoPlay playsInline width="600px" height="900px" hidden={true}/>
+                  <canvas ref={opponentCanvas} width="600px" height="900px" hidden={true}></ canvas>
+                  <canvas ref={opponentView} width="600px" height="900px" className="view"></canvas>
               </div>
               <div className="options">
                 <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>

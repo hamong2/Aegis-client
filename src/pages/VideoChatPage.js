@@ -257,38 +257,46 @@ export default function VideoChat() {
       });
 
       const mosaic = (img) => {
-        var sx=box1[0], sy=box1[1], ex=box1[2], ey=box1[3];
-        for(var i=sy; i<ey; i++) {
-          for(var j=sx; j<ex; j++) {
-            var h = i*400*4;
-            var r = img.data[h+4*j];
-            var g = img.data[h+4*j+1];
-            var b = img.data[h+4*j+2];
-            for(var k=0; k<9; k++) {
-              img.data[h+4*j+4] = r;
-              img.data[h+4*j+5] = g;
-              img.data[h+4*j+6] = b;
-              j++;
-              if(j >= ex) break;
-            }
-          }
+        for(var i = 0; i < img.data.length; i+=4) {
+          var r = img.data[h+4*j];
+          var g = img.data[h+4*j+1];
+          var b = img.data[h+4*j+2];
+          for(var j = 1; j <= 9; j++) {
+            img.data[i+4] = r;
+            img.data[i+5] = g;
+            img.data[i+6] = b;
+            i += 4;
+          }   
         }
-        var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
-        for(var i=sy; i<ey; i++) {
-          for(var j=sx; j<ex; j++) {
-            var h = i*400*4;
-            var r = img.data[h+4*j];
-            var g = img.data[h+4*j+1];
-            var b = img.data[h+4*j+2];
-            for(var k=0; k<9; k++) {
-              img.data[h+4*j+4] = r;
-              img.data[h+4*j+5] = g;
-              img.data[h+4*j+6] = b;
-              j++;
-              if(j >= ex) break;
-            }
-          }
-        }
+        // var sx=box1[0], sy=box1[1], ex=box1[2], ey=box1[3];
+        // for(var i=sy; i<ey; i++) {
+        //   for(var j=sx; j<ex; j++) {
+        //     var h = i*400*4;
+        //     for(var k=0; k<9; k++) {
+        //       img.data[h+4*j+4] = r;
+        //       img.data[h+4*j+5] = g;
+        //       img.data[h+4*j+6] = b;
+        //       j++;
+        //       if(j >= ex) break;
+        //     }
+        //   }
+        // }
+        // var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
+        // for(var i=sy; i<ey; i++) {
+        //   for(var j=sx; j<ex; j++) {
+        //     var h = i*400*4;
+        //     var r = img.data[h+4*j];
+        //     var g = img.data[h+4*j+1];
+        //     var b = img.data[h+4*j+2];
+        //     for(var k=0; k<9; k++) {
+        //       img.data[h+4*j+4] = r;
+        //       img.data[h+4*j+5] = g;
+        //       img.data[h+4*j+6] = b;
+        //       j++;
+        //       if(j >= ex) break;
+        //     }
+        //   }
+        // }
         return img;
       }
       pysocket.on('filter', (data) => {

@@ -162,7 +162,11 @@ const StyledVideoChat = styled.div`
 
   .filter__list {
     display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 3vh;
+    background-color: #D9D9D9;
+    width: 300px;
   }
 
   .filter_btn {
@@ -388,14 +392,24 @@ export default function VideoChat() {
   
   const filtering_12 = () => {
     mosaic_list = filter_12;
+    btn12.current.style.backgroundColor="#868686";
+    btn15.current.style.backgroundColor="#D9D9D9";
+    btn19.current.style.backgroundColor="#D9D9D9";
   }
 
   const filtering_15 = () => {
     mosaic_list = filter_15;    
+    btn12.current.style.backgroundColor="#D9D9D9";
+    btn15.current.style.backgroundColor="#868686";
+    btn19.current.style.backgroundColor="#D9D9D9";
   }
+
 
   const filtering_19 = () => {
     mosaic_list = filter_19;    
+    btn12.current.style.backgroundColor="#D9D9D9";
+    btn15.current.style.backgroundColor="#D9D9D9";
+    btn19.current.style.backgroundColor="#868686";
   }
 
   return (

@@ -187,7 +187,7 @@ export default function VideoChat() {
   let then;
   let cnt=5;
   let verb=-1;
-  let mosaic_list = [117,118,120,121];
+  let mosaic_list = [];
   const filter_12 = [117,118,120,121];
   const filter_15 = [120,121];
   const filter_19 = [];

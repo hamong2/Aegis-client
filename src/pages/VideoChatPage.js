@@ -186,9 +186,8 @@ export default function VideoChat() {
   let myThen;
   let then;
   let cnt=5;
-  let box1=[0,0,0,0], box2=[0,0,0,0];
   let verb=-1;
-  let mosaic_list = [];
+  let mosaic_list = [117,118,120,121];
   const filter_12 = [117,118,120,121];
   const filter_15 = [120,121];
   const filter_19 = [];
@@ -294,23 +293,6 @@ export default function VideoChat() {
       }
       pysocket.on('filter', (data) => {
         var iData = opctx.getImageData(0,0,300,400);
-        if (data.count == 5) {
-          console.log(data.verb, data.bbox);
-          for(var i=0; i<data.bbox.length; i++) {
-            if(i == 0) {
-              box1[0] = Math.trunc(data.bbox[i][0]);
-              box1[1] = Math.trunc(data.bbox[i][1]);
-              box1[2] = Math.trunc(data.bbox[i][2]);
-              box1[3] = Math.trunc(data.bbox[i][3]);
-            }
-            else {
-              box2[0] = Math.trunc(data.bbox[i][0]);
-              box2[1] = Math.trunc(data.bbox[i][1]);
-              box2[2] = Math.trunc(data.bbox[i][2]);
-              box2[3] = Math.trunc(data.bbox[i][3]);
-            }
-          }
-        }
         if(data.verb > 0) verb = data.verb;
         else if(data.verb == 0) verb = 0;
         if(mosaic_list.includes(verb)) iData = mosaic(iData);

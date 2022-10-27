@@ -56,9 +56,9 @@ export default function IterLog(props) {
                 time = Math.floor(time);
             }
             console.log(verb);
-            if(fil_12.includes(verb)) result.push(<div className="log"><img width="20px" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Icon_12_sapphire.svg"/> {strTime}</div>);
-            else if(fil_15.includes(verb)) result.push(<div className="log"><img width="20px" src="https://upload.wikimedia.org/wikipedia/commons/d/de/15_icon.svg"/> {strTime}</div>);
-            else if(fil_19.includes(verb)) result.push(<div className="log"><img width="20px" src = "https://upload.wikimedia.org/wikipedia/commons/7/78/Republic_Of_Korea_Broadcasting-TV_Rating_System%2819%29.svg"/> {strTime}</div>);
+            if(fil_12.includes(verb)) result.push(<div className="log"><img width="20px" src="./12.svg"/> {strTime}</div>);
+            else if(fil_15.includes(verb)) result.push(<div className="log"><img width="20px" src="./15.svg"/> {strTime}</div>);
+            else if(fil_19.includes(verb)) result.push(<div className="log"><img width="20px" src = "./19.svg"/> {strTime}</div>);
         }
         return result
     }

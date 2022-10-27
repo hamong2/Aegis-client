@@ -258,9 +258,9 @@ export default function VideoChat() {
 
       const mosaic = (img) => {
         for(var i = 0; i < img.data.length; i+=4) {
-          var r = img.data[h+4*j];
-          var g = img.data[h+4*j+1];
-          var b = img.data[h+4*j+2];
+          var r = img.data[i];
+          var g = img.data[i+1];
+          var b = img.data[i+2];
           for(var j = 1; j <= 9; j++) {
             img.data[i+4] = r;
             img.data[i+5] = g;

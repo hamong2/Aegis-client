@@ -159,6 +159,16 @@ const StyledVideoChat = styled.div`
     font-weight: bold;
     font-size: 1.5vw;
   }
+
+  .filter__list {
+    display: flex;
+    margin-top: 3vh;
+  }
+
+  .filter_btn {
+    margin: 0 0.5vw 0 0.5vw;
+  }
+
 `
 
 
@@ -174,6 +184,10 @@ export default function VideoChat() {
   let cnt=5;
   let box1=[0,0,0,0], box2=[0,0,0,0];
   let verb=-1;
+  let mosaic_list = [];
+  const filter_12 = [117,118,120,121];
+  const filter_15 = [120,121];
+  const filter_19 = [];
 
   const videoGrid = useRef();
   const myVideo = useRef();
@@ -183,6 +197,10 @@ export default function VideoChat() {
   const opponentView = useRef();
   const recordTime = useRef();
   const invited = useRef();
+  const btn12 = useRef();
+  const btn15 = useRef();
+  const btn19 = useRef();
+
   const peer = new Peer(); 
 
   const [withFriend, isWithFriend] = useState(false);
@@ -268,39 +286,10 @@ export default function VideoChat() {
             i += 4;
           }   
         }
-        // var sx=box1[0], sy=box1[1], ex=box1[2], ey=box1[3];
-        // for(var i=sy; i<ey; i++) {
-        //   for(var j=sx; j<ex; j++) {
-        //     var h = i*400*4;
-        //     for(var k=0; k<9; k++) {
-        //       img.data[h+4*j+4] = r;
-        //       img.data[h+4*j+5] = g;
-        //       img.data[h+4*j+6] = b;
-        //       j++;
-        //       if(j >= ex) break;
-        //     }
-        //   }
-        // }
-        // var sx=box2[0], sy=box2[1], ex=box2[2], ey=box2[3];
-        // for(var i=sy; i<ey; i++) {
-        //   for(var j=sx; j<ex; j++) {
-        //     var h = i*400*4;
-        //     var r = img.data[h+4*j];
-        //     var g = img.data[h+4*j+1];
-        //     var b = img.data[h+4*j+2];
-        //     for(var k=0; k<9; k++) {
-        //       img.data[h+4*j+4] = r;
-        //       img.data[h+4*j+5] = g;
-        //       img.data[h+4*j+6] = b;
-        //       j++;
-        //       if(j >= ex) break;
-        //     }
-        //   }
-        // }
         return img;
       }
       pysocket.on('filter', (data) => {
-        var iData = opctx.getImageData(0,0,600,900);
+        var iData = opctx.getImageData(0,0,300,400);
         if (data.count == 5) {
           console.log(data.verb, data.bbox);
           for(var i=0; i<data.bbox.length; i++) {
@@ -320,7 +309,7 @@ export default function VideoChat() {
         }
         if(data.verb > 0) verb = data.verb;
         else if(data.verb == 0) verb = 0;
-        if(verb >= 117) iData = mosaic(iData);
+        if(mosaic_list.includes(verb)) iData = mosaic(iData);
         opView.putImageData(iData, 0, 0);
       });
       const startAnimating = (fps) => {
@@ -397,6 +386,17 @@ export default function VideoChat() {
     }
   }
   
+  const filtering_12 = () => {
+    mosaic_list = filter_12;
+  }
+
+  const filtering_15 = () => {
+    mosaic_list = filter_15;    
+  }
+
+  const filtering_19 = () => {
+    mosaic_list = filter_19;    
+  }
 
   return (
       <StyledVideoChat>
@@ -416,6 +416,17 @@ export default function VideoChat() {
                   <canvas ref={opponentCanvas} width="300px" height="400px" hidden={true}></ canvas>
                   <canvas ref={opponentView} width="300px" height="400px" className="view"></canvas>
               </div>
+              <div className="filter__list">
+                      <div ref={btn12} className="filter_btn" onClick={filtering_12}>
+                        <img width="50px" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Icon_12_sapphire.svg"/>
+                      </div>
+                      <div ref={btn15} className="filter_btn" onClick={filtering_15}>
+                        <img width="50px" src="https://upload.wikimedia.org/wikipedia/commons/d/de/15_icon.svg"/>
+                      </div>
+                      <div ref={btn19} className="filter_btn" onClick={filtering_19}>
+                        <img width="50px" src = "https://upload.wikimedia.org/wikipedia/commons/7/78/Republic_Of_Korea_Broadcasting-TV_Rating_System%2819%29.svg"/>
+                      </div>
+                    </div>
               <div className="options">
                 <Btn className="btn" btnAction="startAudio" handleAudio={ handleAudio }/>
                 <Btn className="btn" btnAction="startVideo" handleCamera={ handleCamera }/>

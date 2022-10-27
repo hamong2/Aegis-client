@@ -153,8 +153,9 @@ video {
 }
 
 .options {
-    width: 800px;
+    width: 600px;
     display: flex;
+    border-radius: 30px;
     justify-content: center;
     align-items: center;
     height: 5vh;
@@ -182,6 +183,8 @@ export default function VideoUpload() {
     const [videoSrc, setVideoSrc] = useState("");
     const [log, setLog] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [url, setUrl] = useState("");
+    const file = useRef();
     const uploadVideo = useRef();
 
     const onDrop = (files) => {
@@ -225,8 +228,13 @@ export default function VideoUpload() {
                 method: "GET", // 혹은 'POST'
                 responseType: "blob", // 응답 데이터 타입 정의
             }).then((response) => {
+                console.log("a");
                 const blob = new Blob([response.data]);
                 const fileObjectUrl = window.URL.createObjectURL(blob);
+                file.current.download = "filter.mp4";
+                console.log(fileObjectUrl);
+                setUrl(fileObjectUrl);
+                file.current.click();
             })
             .catch((err) => {
                 console.log("er");
@@ -243,6 +251,7 @@ export default function VideoUpload() {
             </div>
             <div className="blank"/>
             <div className="main">
+                <a ref={file} href={url} hidden={false}></a>
                 <div className="uploadVideo">
                     {!existVideo ? <Dropzone onDrop={onDrop}>
                     {({getRootProps, getInputProps}) => (

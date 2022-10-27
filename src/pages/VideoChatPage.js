@@ -187,7 +187,7 @@ export default function VideoChat() {
   let then;
   let cnt=5;
   let verb=-1;
-  let mosaic_list = [];
+  let state=0;
   const filter_12 = [117,118,120,121];
   const filter_15 = [120,121];
   const filter_19 = [];
@@ -295,7 +295,15 @@ export default function VideoChat() {
         var iData = opctx.getImageData(0,0,300,400);
         if(data.verb > 0) verb = data.verb;
         else if(data.verb == 0) verb = 0;
-        if(mosaic_list.includes(verb)) iData = mosaic(iData);
+        if(state===0) {
+          if(filter_12.includes(verb)) iData = mosaic(iData);
+        }
+        else if(state===1) {
+          if(filter_15.includes(verb)) iData = mosaic(iData); 
+        }
+        else if(state===2) {
+          if(filter_19.includes(verb)) iData = mosaic(iData);
+        }
         opView.putImageData(iData, 0, 0);
       });
       const startAnimating = (fps) => {
@@ -373,14 +381,14 @@ export default function VideoChat() {
   }
   
   const filtering_12 = () => {
-    mosaic_list = filter_12;
+    state = 0;
     btn12.current.style.backgroundColor="#868686";
     btn15.current.style.backgroundColor="#D9D9D9";
     btn19.current.style.backgroundColor="#D9D9D9";
   }
 
   const filtering_15 = () => {
-    mosaic_list = filter_15;    
+    state = 1;
     btn12.current.style.backgroundColor="#D9D9D9";
     btn15.current.style.backgroundColor="#868686";
     btn19.current.style.backgroundColor="#D9D9D9";
@@ -388,7 +396,7 @@ export default function VideoChat() {
 
 
   const filtering_19 = () => {
-    mosaic_list = filter_19;    
+    state = 2;
     btn12.current.style.backgroundColor="#D9D9D9";
     btn15.current.style.backgroundColor="#D9D9D9";
     btn19.current.style.backgroundColor="#868686";

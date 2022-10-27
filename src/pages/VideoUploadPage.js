@@ -169,6 +169,10 @@ video {
     margin-right: 3vw;
     margin-left: 3vw;
 }
+
+img{
+    z-index:999;
+}
 `
 
 
@@ -179,7 +183,6 @@ export default function VideoUpload() {
     const [log, setLog] = useState([]);
     const [loading, setLoading] = useState(false);
     const uploadVideo = useRef();
-    const myCanvas = useRef();
 
     const onDrop = (files) => {
         setLoading(true);
@@ -192,20 +195,21 @@ export default function VideoUpload() {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     withCredential: true
-                }
+                },
+                timeout: 3600000
             })
             .then((res) => {
                 console.log("success");
-                console.log(res);
                 const fileURL = window.URL.createObjectURL(files[0]);
-                setLog(res.data);
+                setLog(res.data.log);
                 setVideoSrc(fileURL);
                 setLoading(false);
+                setExistVideo(true);
             })
             .catch((err) => {
                 alert("fail!");
+                setLoading(false);
             })
-        setExistVideo(true);
     };
 
     useEffect(() => {
@@ -216,7 +220,18 @@ export default function VideoUpload() {
           
     const download = () => {
         console.log("download!");
-    }
+        axios({
+                url: "https://ec2-43-200-8-249.ap-northeast-2.compute.amazonaws.com/upload", // 파일 다운로드 요청 URL
+                method: "GET", // 혹은 'POST'
+                responseType: "blob", // 응답 데이터 타입 정의
+            }).then((response) => {
+                const blob = new Blob([response.data]);
+                const fileObjectUrl = window.URL.createObjectURL(blob);
+            })
+            .catch((err) => {
+                console.log("er");
+            });
+}
 
     return ( 
         <StyledVideoUpload>
